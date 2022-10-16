@@ -16,7 +16,7 @@ pipeline {
     stages {
         stage('gitHub') {
             steps {
-                git branch: '${params.BranchName}', git credentialsId: 'GitHub', url: 'https://github.com/SecondOne2516/maven-web-application'
+                git branch: "${params.BranchName}", git credentialsId: 'GitHub', url: 'https://github.com/SecondOne2516/maven-web-application'
             }
         }
         stage('Maven') {
