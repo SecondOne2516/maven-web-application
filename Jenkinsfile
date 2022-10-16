@@ -1,5 +1,9 @@
 pipeline {
     agent any
+    parameters {
+        choice choices: ['development', 'master', 'QA'], name: 'BranchName'
+    }
+
     options {
         buildDiscarder logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '5', numToKeepStr: '5')
     }
