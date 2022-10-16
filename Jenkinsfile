@@ -1,20 +1,19 @@
 pipeline {
-    agent any
+    agentany
     options {
         buildDiscarder logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '5', numToKeepStr: '5')
     }
 
+    triggers {
+        pollSCM '* * * * *'
+    }
     tools {
         maven 'maven 3.8.6'
     }
-        parameters {
-        choice choices: ['development', 'master', 'QA'], description: 'Select the branch', name: 'BranchName'
-    }
-
     stages {
         stage('gitHub') {
             steps {
-                git branch: '*/$(BranchName}', credentialsId: '51e60d4f-73a5-4ef5-985d-48f496178347', url: 'https://github.com/SecondOne2516/maven-web-application.git'
+                git credentialsId: 'GitHub', url: 'https://github.com/SecondOne2516/maven-web-application'
             }
         }
         stage('Maven') {
