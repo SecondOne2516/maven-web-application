@@ -1,5 +1,6 @@
 pipeline {
     agent any
+
     options {
         buildDiscarder logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '5', numToKeepStr: '5')
     }
@@ -8,14 +9,13 @@ pipeline {
         maven 'maven 3.8.6'
     }
     parameters {
-        choice choices: ['development', 'master'], name: 'BranchName'
+        choice choices: ['development', 'master', 'qa'], description: 'Select the branch', name: 'BranchName'
     }
 
     stages {
         stage('gitHub') {
             steps {
-                git branch: "${params.BranchName}"
-                git credentialsId: 'GitHub', url: 'https://github.com/SecondOne2516/maven-web-application'
+                git branch: "${params.BranchName}", credentialsId: 'GitHub', url: 'https://github.com/SecondOne2516/maven-web-application'
             }
         }
         stage('Maven') {
