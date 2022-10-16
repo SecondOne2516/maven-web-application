@@ -1,34 +1,52 @@
-node {
-    try {
-        notifyBuild('Started')
-    properties([buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '5', numToKeepStr: '5')), [$class: 'JobLocalConfiguration', changeReasonComment: '']])
-    def MAVEN_HOME= tool name: "maven 3.8.6" 
-    stage('gitHub') {
-        git credentialsId: 'GitHub', url: 'https://github.com/SecondOne2516/maven-web-application'
+pipeline {
+    agent any
+
+    options {
+        buildDiscarder logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '5', numToKeepStr: '5')
     }
-    stage('Maven') {
-        sh "${MAVEN_HOME}/bin/mvn clean package"
+
+    tools {
+        maven 'maven 3.8.6'
     }
-    stage('SonarQubeReport') {
-        sh "${MAVEN_HOME}/bin/mvn sonar:sonar"
+    parameters {
+        choice choices: ['development', 'master', 'qa'], description: 'Select the branch', name: 'BranchName'
     }
-    stage('Nexus') {
-        sh "${MAVEN_HOME}/bin/mvn deploy"
-    }
-    stage('TomcatServer') {
-        sshagent(['d736ca28-b458-4fc6-ac65-24fdf4a0fe73']) {
-            sh "scp -o StrictHostKeyChecking=no target/maven-web-application.war ec2-user@172.31.3.155:/opt/apache-tomcat-9.0.68/webapps/"
+
+    stages {
+        stage('gitHub') {
+            steps {
+                git branch: "${params.BranchName}", credentialsId: 'GitHub', url: 'https://github.com/SecondOne2516/maven-web-application'
+            }
         }
-         
+        stage('Maven') {
+            steps {
+                sh "mvn clean package"
+            }
+        }
+        stage('SonarQubeReport') {
+            steps {
+                sh "mvn sonar:sonar"
+            }
+        }
+        stage('Nexus') {
+            steps {
+                sh "mvn deploy"
+            }
+        }
+        stage('TomcatServer') {
+            steps {
+                sshagent(['d736ca28-b458-4fc6-ac65-24fdf4a0fe73']) {
+                    sh "scp -o StrictHostKeyChecking=no target/maven-web-application.war ec2-user@172.31.3.155:/opt/apache-tomcat-9.0.68/webapps/"
+                }
+            }
+        }
     }
-    }
-    catch(e) {
-        currentBuild.result = "FAILED"
-            throw e
-    }
-    finally {
-        notifyBuild(currentBuild.result)
-    }
+    post {
+  success {
+    notifyBuild('SUCCESSFUL')
+  }
+}
+
 }
 def notifyBuild(String buildStatus = 'STARTED') {
   // build status of null means successful
