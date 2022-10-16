@@ -1,15 +1,16 @@
 pipeline {
     agent any
-    parameters {
-        choice choices: ['development', 'master', 'QA'], description: 'Select the branch', name: 'BranchName'
-    }
     options {
         buildDiscarder logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '5', numToKeepStr: '5')
     }
-    
+
     tools {
         maven 'maven 3.8.6'
     }
+        parameters {
+        choice choices: ['development', 'master', 'QA'], description: 'Select the branch', name: 'BranchName'
+    }
+
     stages {
         stage('gitHub') {
             steps {
