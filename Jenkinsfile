@@ -1,4 +1,5 @@
 node {
+    echo "The Build number is ${BUILD_NUMBER}"
     properties([buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '5', numToKeepStr: '5')), [$class: 'JobLocalConfiguration', changeReasonComment: ''], pipelineTriggers([githubPush()])])
     def MAVEN_HOME= tool name: "maven 3.8.6" 
     stage('gitHub') {
