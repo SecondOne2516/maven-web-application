@@ -4,12 +4,13 @@ pipeline {
         buildDiscarder logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '5', numToKeepStr: '5')
     }
 
-    triggers {
-        pollSCM '* * * * *'
-    }
     tools {
         maven 'maven 3.8.6'
     }
+    parameters {
+        choice choices: ['development', 'master'], name: 'BranchName'
+    }
+
     stages {
         stage('gitHub') {
             steps {
