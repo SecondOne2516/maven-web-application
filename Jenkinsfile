@@ -1,9 +1,8 @@
 pipeline {
     agent any
     parameters {
-        choice choices: ['development', 'master', 'QA'], name: 'BranchName'
+        choice choices: ['development', 'master', 'QA'], description: 'Select the branch', name: 'BranchName'
     }
-
     options {
         buildDiscarder logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '5', numToKeepStr: '5')
     }
@@ -17,7 +16,7 @@ pipeline {
     stages {
         stage('gitHub') {
             steps {
-                git credentialsId: 'GitHub', url: 'https://github.com/SecondOne2516/maven-web-application'
+                git branch: '${params.BranchName}', git credentialsId: 'GitHub', url: 'https://github.com/SecondOne2516/maven-web-application'
             }
         }
         stage('Maven') {
