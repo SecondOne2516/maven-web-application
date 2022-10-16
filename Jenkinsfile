@@ -15,6 +15,7 @@ pipeline {
     stages {
         stage('gitHub') {
             steps {
+                notifyBuild('STARTED')
                 git branch: "${params.BranchName}", credentialsId: 'GitHub', url: 'https://github.com/SecondOne2516/maven-web-application'
             }
         }
