@@ -1,4 +1,4 @@
-@Library ('library') _
+@Library ('notifyBuild') _
 pipeline {
     agent any
 
